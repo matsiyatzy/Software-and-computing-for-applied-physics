@@ -1,2 +1,1 @@
-# Software-and-computing-for-applied-physics
-Repository containing the project for the course 87948 Software and Computing for Applied Physics at University of Bologna.
+# Solving the 2D-Poisson equation on the unit disc with dirichlet boundary conditions using the finite element method 
