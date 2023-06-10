@@ -22,7 +22,7 @@ l(v) &= \iint_\Omega fv d\Omega. \end{align*}$$
 
 Instead of finding a solution in the whole space $H_0^1(\Omega)$, we find a solution in a smaller space $X_h \subset H_0^1$. Let our domain $\Omega$ be discretized into $M$ triangles, such that $\Omega = \cup_{k=1}^M K_k$. Each triangle $K_k$ is then defined by its three corner nodes $(x_i, y_i)$, and there is a basis function corresponding to each node. The space $X_h$ is defined by
 
-$$X_h = \left\lbrace v\in X = H_0^1: v\rvert_{K_k}m \in \mathbb{P}_1(K_k), 1\leq k\leq M \right\rbrace.$$
+$$X_h = \left\lbrace v\in X = H_0^1: v\rvert_{K_k} \in \mathbb{P}_1(K_k), 1\leq k\leq M \right\rbrace.$$
     
 and the basis functions $\lbrace\varphi_i\rbrace_{i=1}^n$ satisfy
 
