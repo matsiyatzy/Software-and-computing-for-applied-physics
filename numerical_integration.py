@@ -9,11 +9,11 @@ def gaussian_quadrature_2D(p1, p2, p3, N_q : int, g):
         ----------------
         Inputs: 
             p1: first corner point of a triangle, 
-                list of numpy array of size 2
+                list or numpy array of size 2
             p2: second corner point of a triangle, 
-                list of numpy array of size 2
+                list or numpy array of size 2
             p3: third corner point of a triangle, 
-                list of numpy array of size 2
+                list or numpy array of size 2
             N_q: number of integration points in gaussian quadrature, 
                  type: int
                  options: 1, 2, 3, 4
