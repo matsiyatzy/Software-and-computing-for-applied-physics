@@ -59,28 +59,28 @@ def test_gaussian_quadrature_2d_advanced():
 # Tests from generate_mesh.py
 #----------------------------------------------------------------------------------------
 
-@given(num_points = st.integers(4, 1000))
-def test_circle_data_outwards_circle(num_points):
+@given(num_nodes = st.integers(4, 1000))
+def test_circle_data_outwards_circle(num_nodes):
     '''
         Test that the outward_circle argument from the function circle_data
         is at it should. It should be an integer larger than 0.
     '''
-    outwards_circles, _, _, _ = gm.circle_data(num_points)
+    outwards_circles, _, _, _ = gm.circle_data(num_nodes)
 
     assert isinstance(outwards_circles, int), "Number of outward circles should be an integer"
     assert outwards_circles > 0, "There should be a positive number of outwards circles" 
 
 #--------------------------------------------
 
-@given(num_points = st.integers(4, 1000))
-def test_circle_data_radii_of_circles(num_points):
+@given(num_nodes = st.integers(4, 1000))
+def test_circle_data_radii_of_circles(num_nodes):
     '''
         Test that the radii_of_circles argument from the function circle_data()
         is at it should. The variable should be a np.ndarray. The first element
         is the radius of the origin (that sounds weird but well well) should be 0,
         and the radius of the last circle should be 1 (as the unit circle has radius 1)
     '''
-    _, radii_of_circles, _, _ = gm.circle_data(num_points)
+    _, radii_of_circles, _, _ = gm.circle_data(num_nodes)
 
     assert isinstance(radii_of_circles, np.ndarray), "The radii of the circles should be a np.array"
     assert radii_of_circles[0] == 0, "Radius of the origin must be 0"
@@ -88,32 +88,48 @@ def test_circle_data_radii_of_circles(num_points):
 
 #--------------------------------------------
 
-@given(num_points = st.integers(4, 1000))
-def test_circle_data_dof_in_circles(num_points):
+@given(num_nodes = st.integers(4, 1000))
+def test_circle_data_dof_in_circles(num_nodes):
     '''
         Test that the dof_in_circles argument from the function circle_data()
         is at it should. The variable should be a np.ndarray and the total
-        sum of all elements should be equal to num_points.
+        sum of all elements should be equal to num_nodes.
     '''
-    _, _, dof_in_circles, _ = gm.circle_data(num_points)
+    _, _, dof_in_circles, _ = gm.circle_data(num_nodes)
 
     assert isinstance(dof_in_circles, np.ndarray), "The dof in each circle should be a np.array"
-    assert np.sum(dof_in_circles) == num_points, "The total degrees of freedom should equal num of nodes"
+    assert np.sum(dof_in_circles) == num_nodes, "The total degrees of freedom should equal num of nodes"
     
 #--------------------------------------------
 
-@given(num_points = st.integers(4, 1000))
-def test_circle_data_starting_angle_for_circles(num_points):
+@given(num_nodes = st.integers(4, 1000))
+def test_circle_data_starting_angle_for_circles(num_nodes):
     '''
         Test that the starting_angles_for_circles argument from the function circle_data()
         is at it should. The variable should be a np.ndarray and all elements
         should have a value between 0 and 2 pi. 
     '''
-    _, _, _, starting_angles = gm.circle_data(num_points)
+    _, _, _, starting_angles = gm.circle_data(num_nodes)
 
     assert isinstance(starting_angles, np.ndarray), "The atarting angles list should be a np.array"
     for i in range(len(starting_angles)):
         assert starting_angles[i] < 2*np.pi, "Starting angle must be smaller than 2*pi"
         assert starting_angles[i] >= 0, "Starting angle must be larger than 0"
+
+#----------------------------------------------------------------------------------------
+
+@given(num_nodes = st.integers(4, 10000))
+def test_get_nodal_points_inside_unit_circle(num_nodes):
+    '''
+        Test that the function get_nodal_points only generate points
+        that are inside the unit circle. 
+    '''
+    outward_circles, radii_of_circles, dof_in_circles, starting_angle_for_circles = gm.circle_data(num_nodes)
+
+    # Generating the nodal points.
+    nodal_points = gm.get_nodal_points(num_nodes, outward_circles, radii_of_circles, dof_in_circles, starting_angle_for_circles)
+
+    for i in range(len(nodal_points)):
+        assert np.round(nodal_points[i, 0]**2 + nodal_points[i, 1]**2, 4) <= 1, "Nodal points are outside unit circle"
 
 #----------------------------------------------------------------------------------------

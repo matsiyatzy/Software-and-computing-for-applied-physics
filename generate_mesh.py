@@ -24,13 +24,14 @@ def generate_mesh(num_nodes):
             The function generates a mesh of the unit circle by splitting it up in triangles.
             Number of nodes in the mesh is given by the input N. The function returns ...
     '''
+    # Do a check on num_nodes
 
 
     # Getting data about circle.
-    outwards_circles, radii_of_circles, dof_in_circles, starting_angle_for_circles = circle_data(num_nodes)
+    outward_circles, radii_of_circles, dof_in_circles, starting_angle_for_circles = circle_data(num_nodes)
 
     # Generating the nodal points.
-    #p = nodal_points(pass)
+    nodal_points = get_nodal_points(num_nodes, outward_circles, radii_of_circles, dof_in_circles, starting_angle_for_circles)
 
     
 
@@ -99,4 +100,37 @@ def circle_data(num_nodes):
 
 #--------------------------------------------
 
-#...
+def get_nodal_points(num_nodes, outward_circles, radii_of_circles, dof_in_circles, starting_angle_for_circles):
+    """
+    Auxiliary function for generating nodal points. Used in generate_mesh()
+    ----------------
+    Input:
+    - num_nodes (int): Total number of nodal points.
+    - outward_circles (int): Number of outward circles.
+    - radii_of_circles (ndarray): Array of radii for the different circles.
+    - dof_in_circles (ndarray): Array containing the number of degrees of freedom in each circle.
+    - starting_angle_for_circles (ndarray): Array of starting angles for each circle.
+    ----------------
+    Returns:
+    - nodal_points (ndarray): Array of nodal points.
+    ----------------
+    Raises:
+
+    ----------------
+    This function generates nodal points of the unit circle mesh based on the provided parameters.
+    """
+
+    nodal_points = np.zeros((num_nodes, 2))
+    k = 1
+    for i in range(1, outward_circles + 1):
+        t = starting_angle_for_circles[i]
+        for _ in range(dof_in_circles[i]):
+            nodal_points[k, :] = [np.cos(t) * radii_of_circles[i], np.sin(t) * radii_of_circles[i]]
+            t += 2 * np.pi / dof_in_circles[i]
+            k += 1
+
+    return nodal_points
+
+#--------------------------------------------
+
+# ...
