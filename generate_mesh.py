@@ -8,24 +8,35 @@ import scipy.spatial as spsa
 
 def generate_mesh(num_nodes):
     '''
-        Generates a finite element mesh with N nodes of the unite circle.
+        Generates a finite element mesh with num_nodes nodes of the unit circle.
         ----------------
         Inputs: 
             num_nodes (int): Number of nodes in the finite element mesh
         ----------------
         Outputs:
-            
+            nodal_points (ndarray): List of all nodal points in the mesh
+            elements (ndarray): List where each element is a list of size 3. This
+                                list indicates by index which of the nodal points
+                                that make up the element
+            boundary_edges (ndarray): List where each element is a list of size 2.
+                                      This list indicates by index which two nodal
+                                      points makes up the endpoints of the edge.
+
        ----------------
         Raises:
             ValueError:
-                
+                If num_nodes is too small to generate a valid mesh.
         ----------------
         Long description: 
             The function generates a mesh of the unit circle by splitting it up in triangles.
-            Number of nodes in the mesh is given by the input N. The function returns ...
+            Number of nodes in the mesh is given by the input num_nodes. The function makes
+            three output variables, one containing all the nodes (nodal_points), one giving all
+            the elements (by indicating which nodal points makes up the element) and one containing
+            the boundary edges (by indicating which to nodal points are the end points of the edge).
     '''
     # Do a check on num_nodes
-
+    if (num_nodes < 4):
+        raise ValueError (f"Need more than {num_nodes} nodes to generate a mesh.")
 
     # Getting data about circle.
     outward_circles, radii_of_circles, dof_in_circles, starting_angle_for_circles = circle_data(num_nodes)
@@ -36,7 +47,11 @@ def generate_mesh(num_nodes):
     # Generating boundary edges
     boundary_edges = get_boundary_edges(num_nodes, dof_in_circles)
 
-    return
+    # Generate the elements through delaunay triangulation (to get triangles)
+    mesh = spsa.Delaunay(nodal_points)
+    elements = mesh.simplices
+
+    return nodal_points, elements, boundary_edges
 
 #--------------------------------------------
 
@@ -113,7 +128,7 @@ def get_nodal_points(num_nodes, outward_circles, radii_of_circles, dof_in_circle
     - nodal_points (ndarray): Array of nodal points.
     ----------------
     Raises:
-
+        -
     ----------------
     This function generates nodal points of the unit circle mesh based on the provided parameters.
     """
@@ -141,6 +156,9 @@ def get_boundary_edges(num_nodes, dof_in_circles):
     ----------------
     Returns:
     - boundary_edges (ndarray): Array of pairs of two boundary nodes with an edge between them.
+    ----------------
+    Raises:
+        -
     ----------------
     Long description: 
         This function generates the edges on the boundary of the unit circle based 

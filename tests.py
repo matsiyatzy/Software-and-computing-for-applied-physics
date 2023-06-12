@@ -159,3 +159,23 @@ def test_get_boundary_edges_on_boundary(num_nodes):
 
         # Make sure the second node is on the boundary
         assert np.isclose(nodal_points[int(second_node)][0]**2 + nodal_points[int(second_node)][1]**2, 1), "All boundary nodes needs to be on the boundary"
+
+#----------------------------------------------------------------------------------------
+
+@given (num_nodes = st.integers(4, 10000))
+def test_generate_mesh_elements(num_nodes):
+    '''
+        This is the first test function for the function generate_mesh().
+        The first output variable is already tested in test_nodal_points_inside_unit_circle.
+        The last output variable is already tested in test_get_boundary_edges_on_boundary.
+        This function tests that all elements have 3 unique nodes, and that
+        all of the nodes are used to create elements.
+    '''
+
+    nodal_points, elements, boundary_edges = gm.generate_mesh(num_nodes)
+
+    for element in elements:
+        assert len(element) == 3, "All elements must have 3 nodes"
+        assert len(np.unique(element) == 3), "All nodes in element mus be unique"
+
+#----------------------------------------------------------------------------------------
