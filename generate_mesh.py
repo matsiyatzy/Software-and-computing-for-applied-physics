@@ -33,12 +33,10 @@ def generate_mesh(num_nodes):
     # Generating the nodal points.
     nodal_points = get_nodal_points(num_nodes, outward_circles, radii_of_circles, dof_in_circles, starting_angle_for_circles)
 
-    
+    # Generating boundary edges
+    boundary_edges = get_boundary_edges(num_nodes, dof_in_circles)
 
-    # Generating the boundary elements.
-   # edge = FreeBoundary(N,alpha)
-
-    pass
+    return
 
 #--------------------------------------------
 
@@ -133,4 +131,28 @@ def get_nodal_points(num_nodes, outward_circles, radii_of_circles, dof_in_circle
 
 #--------------------------------------------
 
-# ...
+def get_boundary_edges(num_nodes, dof_in_circles):
+    """
+    Auxillary function to get the boundary nodes on the unit circle.
+    ----------------
+    Inputs:
+    - num_nodes (int): Number of total nodes.
+    - dof_in_circles (ndarray): Array containing the number of degrees of freedom in each circle.
+    ----------------
+    Returns:
+    - boundary_edges (ndarray): Array of pairs of two boundary nodes with an edge between them.
+    ----------------
+    Long description: 
+        This function generates the edges on the boundary of the unit circle based 
+        on the provided inputs.
+    """
+    E = np.arange(num_nodes - dof_in_circles[-1] + 1, num_nodes + 1)
+    boundary_edges = np.zeros((len(E), 2))
+    for i in range(0, len(E)):
+        boundary_edges[i, :] = [E[i], E[i] + 1]
+    boundary_edges[-1, -1] = num_nodes - dof_in_circles[-1] + 1
+    boundary_edges -= 1
+
+    return boundary_edges
+
+#--------------------------------------------

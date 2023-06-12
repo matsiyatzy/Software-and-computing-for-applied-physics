@@ -133,3 +133,29 @@ def test_get_nodal_points_inside_unit_circle(num_nodes):
         assert np.round(nodal_points[i, 0]**2 + nodal_points[i, 1]**2, 4) <= 1, "Nodal points are outside unit circle"
 
 #----------------------------------------------------------------------------------------
+
+@given(num_nodes = st.integers(4, 10000))
+def test_get_boundary_edges_on_boundary(num_nodes):
+    '''
+        Test that the function get_boundary_edges only generate edges
+        betweem nodes that are on the boundary of the unit circle. 
+    '''
+    outward_circles, radii_of_circles, dof_in_circles, starting_angle_for_circles = gm.circle_data(num_nodes)
+
+    # Generating all nodes
+    nodal_points = gm.get_nodal_points(num_nodes, outward_circles, radii_of_circles, dof_in_circles, starting_angle_for_circles)
+
+    # Generating the boundary nodes
+    boundary_edges = gm.get_boundary_edges(num_nodes, dof_in_circles)
+
+    for boundary_edge in boundary_edges:
+        first_node = boundary_edge[0]
+        second_node = boundary_edge[1]
+        print(nodal_points[int(first_node)][0]**2 + nodal_points[int(first_node)][1]**2)
+        print(nodal_points[int(second_node)][0]**2 + nodal_points[int(second_node)][1]**2)
+        
+        # Make sure that first node is on the boundary
+        assert np.isclose(nodal_points[int(first_node)][0]**2 + nodal_points[int(first_node)][1]**2, 1), "All boundary nodes needs to be on the boundary"
+
+        # Make sure the second node is on the boundary
+        assert np.isclose(nodal_points[int(second_node)][0]**2 + nodal_points[int(second_node)][1]**2, 1), "All boundary nodes needs to be on the boundary"
