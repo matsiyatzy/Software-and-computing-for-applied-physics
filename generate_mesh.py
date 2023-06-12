@@ -65,15 +65,15 @@ def circle_data(num_nodes):
     '''
     
     # Number of outward circles,excluding the origin.
-    outwards_circles = int(np.floor(np.sqrt(num_nodes/np.pi)))
+    outward_circles = int(np.floor(np.sqrt(num_nodes / np.pi)))
 
     # Radius of the different circles.
-    radii_of_circles = np.linspace(0,1,outwards_circles+1)
+    radii_of_circles = np.linspace(0, 1, outward_circles + 1)
 
     # Number of DOF in each circle.
-    dof_in_circles_temp = np.floor((2*np.pi*outwards_circles)*radii_of_circles)
-    dof_in_circles = np.zeros(len(dof_in_circles_temp),dtype=int)
-    for i in range(0,len(dof_in_circles_temp)):
+    dof_in_circles_temp = np.floor((2 * np.pi * outward_circles) * radii_of_circles)
+    dof_in_circles = np.zeros(len(dof_in_circles_temp), dtype=int)
+    for i in range(len(dof_in_circles_temp)):
         dof_in_circles[i] = int(dof_in_circles_temp[i])
 
     # Fine-tuning to get the right amount of DOF.
@@ -83,18 +83,19 @@ def circle_data(num_nodes):
         if dof_in_circles[i] > 0:
             dof_in_circles[i] -= 1
         i += 1
-        if sum(dof_in_circles[1:outwards_circles]) == 0:
-            i = outwards_circles
-        elif i > outwards_circles:
+        if sum(dof_in_circles[1:outward_circles]) == 0:
+            i = outward_circles
+        elif i > outward_circles:
             i = 1
+
     while sum(dof_in_circles) < num_nodes:
         dof_in_circles[-1] += 1
 
     # Creating the starting angle.
-    starting_angle_for_circles = np.pi/dof_in_circles
-    starting_angle_for_circles[0:len(dof_in_circles):2] = 0
+    starting_angle_for_circles = np.pi / dof_in_circles
+    starting_angle_for_circles[0::2] = 0
 
-    return outwards_circles, radii_of_circles, dof_in_circles, starting_angle_for_circles
+    return outward_circles, radii_of_circles, dof_in_circles, starting_angle_for_circles
 
 #--------------------------------------------
 
