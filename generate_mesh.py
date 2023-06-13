@@ -53,7 +53,7 @@ def generate_mesh(num_nodes):
 
     return nodal_points, elements, boundary_edges
 
-#--------------------------------------------
+#----------------------------------------------------------------------------------------
 
 def circle_data(num_nodes):
     '''
@@ -111,7 +111,7 @@ def circle_data(num_nodes):
 
     return outward_circles, radii_of_circles, dof_in_circles, starting_angle_for_circles
 
-#--------------------------------------------
+#----------------------------------------------------------------------------------------
 
 def get_nodal_points(num_nodes, outward_circles, radii_of_circles, dof_in_circles, starting_angle_for_circles):
     """
@@ -144,7 +144,7 @@ def get_nodal_points(num_nodes, outward_circles, radii_of_circles, dof_in_circle
 
     return nodal_points
 
-#--------------------------------------------
+#----------------------------------------------------------------------------------------
 
 def get_boundary_edges(num_nodes, dof_in_circles):
     """
@@ -173,4 +173,4 @@ def get_boundary_edges(num_nodes, dof_in_circles):
 
     return boundary_edges
 
-#--------------------------------------------
+#----------------------------------------------------------------------------------------
