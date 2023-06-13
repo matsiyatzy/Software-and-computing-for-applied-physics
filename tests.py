@@ -3,9 +3,9 @@ import numpy as np
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-
 import numerical_integration as numint
 import generate_mesh as gm
+import assemble_stiffness_matrix as stiffness
 
 
 # Tests from numerical_integration.py
@@ -16,7 +16,7 @@ def test_gaussian_quadrature_2d_simple():
         Test that the gaussian_quadrature_2d function can evaluate a simple integral
         on a simple domain. In this case the function g(x, y) = x+y on the triangle
         given by the points (0, 0), (1, 0) and (0, 1).
-        Which is \int_0^1\int_0^1 x+y dxdy = 1/3
+        Which is int_0^1 int_0^1 x+y dxdy = 1/3
     '''
 
     def g(x, y):
@@ -31,14 +31,14 @@ def test_gaussian_quadrature_2d_simple():
     numerical_value = numint.gaussian_quadrature_2D(p1, p2, p3, 4, g)
     assert np.abs(numerical_value-exact) < 0.01
 
-#--------------------------------------------
+#----------------------------------------------------------------------------------------
 
 def test_gaussian_quadrature_2d_advanced():
     '''
         Test that the gaussian_quadrature_2d function can evaluate a tougher integral
         on a non-trivial domain. In this case the function g(x, y) = log(x+y) on the triangle
         given by the points (1, 0), (3, 1) and (3, 2).
-        Which is \int_0^1\int_0^1 log(x+y) dxdy \approx 1.16541
+        Which is int_0^1 int_0^1 log(x+y) dxdy approx 1.16541
     '''
 
     def g(x, y):
@@ -70,7 +70,7 @@ def test_circle_data_outwards_circle(num_nodes):
     assert isinstance(outwards_circles, int), "Number of outward circles should be an integer"
     assert outwards_circles > 0, "There should be a positive number of outwards circles" 
 
-#--------------------------------------------
+#----------------------------------------------------------------------------------------
 
 @given(num_nodes = st.integers(4, 1000))
 def test_circle_data_radii_of_circles(num_nodes):
@@ -86,7 +86,7 @@ def test_circle_data_radii_of_circles(num_nodes):
     assert radii_of_circles[0] == 0, "Radius of the origin must be 0"
     assert radii_of_circles[-1] == 1, "Radius of the last circle must be 1"
 
-#--------------------------------------------
+#----------------------------------------------------------------------------------------
 
 @given(num_nodes = st.integers(4, 1000))
 def test_circle_data_dof_in_circles(num_nodes):
@@ -100,7 +100,7 @@ def test_circle_data_dof_in_circles(num_nodes):
     assert isinstance(dof_in_circles, np.ndarray), "The dof in each circle should be a np.array"
     assert np.sum(dof_in_circles) == num_nodes, "The total degrees of freedom should equal num of nodes"
     
-#--------------------------------------------
+#----------------------------------------------------------------------------------------
 
 @given(num_nodes = st.integers(4, 1000))
 def test_circle_data_starting_angle_for_circles(num_nodes):
@@ -165,7 +165,7 @@ def test_get_boundary_edges_on_boundary(num_nodes):
 @given (num_nodes = st.integers(4, 10000))
 def test_generate_mesh_elements(num_nodes):
     '''
-        This is the first test function for the function generate_mesh().
+        This is a test function for the function generate_mesh().
         The first output variable is already tested in test_nodal_points_inside_unit_circle.
         The last output variable is already tested in test_get_boundary_edges_on_boundary.
         This function tests that all elements have 3 unique nodes, and that
@@ -177,5 +177,37 @@ def test_generate_mesh_elements(num_nodes):
     for element in elements:
         assert len(element) == 3, "All elements must have 3 nodes"
         assert len(np.unique(element) == 3), "All nodes in element mus be unique"
+
+#----------------------------------------------------------------------------------------
+
+# Tests from assemble_stiffness_matrix
+#----------------------------------------------------------------------------------------
+
+def test_elemental_stiffness_matrix():
+    '''
+        This is a test function for the function elemental_stiffness_matrix().
+        To test this, I check the basic case where
+        nodal_points = ([0, 0], [1, 0], [0, 1]). Following the calculations in the 
+        .pdf theory file, we get:
+        [c_1, c_x,1, c_y, 1] = [1, -1, 0]
+        [c_2, c_x,2, c_y, 2] = [0, 1, 0]
+        [c_3, c_x,3, c_y, 3] = [0, 0, 1]
+        Area = 1/2
+        And then from the formula 
+        elemental_matrix_{alpha, beta} = area*(c_x,alpha * c_x,beta + c_y, alpha * c_y, beta), 
+        the elemental matrix for this simple example is:
+        A_k = [[1, -0.5, -0.5], 
+               [-0.5, 0.5, 0], 
+               [-0.5, 0, 0.5]]
+    '''
+    nodal_points = np.array([[0.0, 0.0], [1.0, 0.0], [0.0, 1.0], [0.5, 0.5]])
+    element = [0, 1, 2]
+    A_k = stiffness.elemental_stiffness_matrix(nodal_points, element)
+
+    expected_output = np.array([[1, -0.5, -0.5], 
+                                [-0.5, 0.5, 0], 
+                                [-0.5, 0, 0.5]])
+    
+    assert np.allclose(A_k, expected_output), "Wrong elemental matrix in simple case"
 
 #----------------------------------------------------------------------------------------

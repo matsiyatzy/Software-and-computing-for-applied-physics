@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def elemental_stiffness_matrix(nodal_points, element):
     '''¨
         Function that creates the local 3x3 elemental matrices.
@@ -37,6 +38,8 @@ def elemental_stiffness_matrix(nodal_points, element):
     # Full coefficient matrix for local basis function
     C = np.array([C_1, C_2, C_3])
 
+    print(C)
+
     # Create empty local elemental matrix
     A_k = np.zeros((3, 3))
 
@@ -46,7 +49,7 @@ def elemental_stiffness_matrix(nodal_points, element):
     # Assemble local elemental matrix - follows the theory pdf
     for alpha in range(3):
         for beta in range(3):
-            # A^k_{alpha, beta} = area(triangle) * (c_x,alpha * c_x,beta + c_y, alpha * c_x, beta)
+            # A^k_{alpha, beta} = area(triangle) * (c_x,alpha * c_x,beta + c_y, alpha * c_y, beta)
             A_k[alpha,beta] = area * (C[alpha,1] * C[beta,1] + C[alpha,2] * C[beta,2])
     return A_k
 
