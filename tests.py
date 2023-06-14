@@ -6,6 +6,7 @@ from hypothesis import strategies as st
 import numerical_integration as numint
 import generate_mesh as gm
 import assemble_stiffness_matrix as stiffness
+import assemble_load_vector as load
 
 
 # Tests from numerical_integration.py
@@ -229,3 +230,36 @@ def test_stiffness_matrix(num_nodes):
 
     # Check that matrix is singular (condition number is effectively infinite)
     assert np.linalg.cond(A) > 1e16, "Stifness matrix must be singular"
+
+#----------------------------------------------------------------------------------------
+
+# Tests from assemble_load_vector
+#----------------------------------------------------------------------------------------
+
+def test_elemental_load_vector():
+    '''
+        This is a test function for the function elemental_load_vector().
+        To test this, I check the basic case where
+        nodal_points = ([0, 0], [1, 0], [0, 1]). 
+        For a right hand side function I use f(x, y) = x+y
+        Following the calculations in the 
+        .pdf theory file, we get:
+        [c_1, c_x,1, c_y,1] = [1, -1, 0]
+        [c_2, c_x,2, c_y,2] = [0, 1, 0]
+        [c_3, c_x,3, c_y,3] = [0, 0, 1]
+        And then from the formula, where 
+        H_alpha = c_alpha + c_x,alpha * x + c_y,alpha * y
+        elemental_load_{alpha} = int_{Triangle} f*H dA, 
+        the elemental load vector for this simple example is:
+        F_k = [1/12, 1/8, 1/8]
+    '''
+    def f_test(x, y):
+        return x+y
+    
+    nodal_points = np.array([[0.0, 0.0], [1.0, 0.0], [0.0, 1.0]])
+    element = [0, 1, 2]
+    F_k = load.elemental_load_vector(nodal_points, element, f_test)
+
+    expected_output = np.array([1/12, 1/8, 1/8])
+    
+    assert np.allclose(F_k, expected_output), "Wrong elemental load vector in simple case"
