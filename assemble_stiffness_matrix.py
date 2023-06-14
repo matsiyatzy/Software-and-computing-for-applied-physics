@@ -38,8 +38,6 @@ def elemental_stiffness_matrix(nodal_points, element):
     # Full coefficient matrix for local basis function
     C = np.array([C_1, C_2, C_3])
 
-    print(C)
-
     # Create empty local elemental matrix
     A_k = np.zeros((3, 3))
 
@@ -56,4 +54,38 @@ def elemental_stiffness_matrix(nodal_points, element):
 #----------------------------------------------------------------------------------------
 
 def stiffness_matrix(num_nodes, nodal_points, elements):
-    pass
+    '''
+        This function assembles the whole stiffness matrix A. 
+        ----------------
+        Inputs:
+            num_nodes (int): Total number of nodes in the finite element mesh
+            nodal_points: List/numpy array of all nodal points in the mesh
+            elements: List/numpy array where every element is a vector with 3 elements
+                      which gives the index in the nodal_points array of which nodes
+                      makes up element i
+        ----------------
+        Output:
+            stiffness_matrix: A num_nodes x num_nodes matrix that is the stiffness
+                              matrix for the whole system
+        ----------------
+        Raises:
+            -
+        ----------------
+        Long description:
+            This function uses the mesh of the unit circle and the helping function 
+            elemental_stiffness_matrix() to assemble the full stiffness matrix of
+            the system.
+    '''
+    # Initialize stiffness matrix as a matrix of zeros
+    A = np.zeros((num_nodes,num_nodes))
+    num_elemenents = len(elements)
+
+    for k in range(num_elemenents):
+        Ah_k = elemental_stiffness_matrix(nodal_points, elements[k])
+        for alpha in range(3):
+            # Local to global map
+            i = elements[k,alpha]
+            for beta in range(3):
+                j = elements[k,beta]
+                A[i,j] += Ah_k[alpha, beta]
+    return A

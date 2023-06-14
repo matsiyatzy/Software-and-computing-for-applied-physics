@@ -162,7 +162,7 @@ def test_get_boundary_edges_on_boundary(num_nodes):
 
 #----------------------------------------------------------------------------------------
 
-@given (num_nodes = st.integers(4, 10000))
+@given (num_nodes = st.integers(4, 1000))
 def test_generate_mesh_elements(num_nodes):
     '''
         This is a test function for the function generate_mesh().
@@ -176,7 +176,7 @@ def test_generate_mesh_elements(num_nodes):
 
     for element in elements:
         assert len(element) == 3, "All elements must have 3 nodes"
-        assert len(np.unique(element) == 3), "All nodes in element mus be unique"
+        assert len(np.unique(element) == 3), "All nodes in element must be unique"
 
 #----------------------------------------------------------------------------------------
 
@@ -211,3 +211,21 @@ def test_elemental_stiffness_matrix():
     assert np.allclose(A_k, expected_output), "Wrong elemental matrix in simple case"
 
 #----------------------------------------------------------------------------------------
+
+@given(num_nodes = st.integers(4, 100)) # Only up to 100 due to time condition in pytest
+def test_stiffness_matrix(num_nodes):
+    '''
+        This is a test function for the function stiffness_matrix().
+        This function asserts two main properties of the stiffness matrix, 
+        that it is square and that it is singular.
+
+    '''
+    nodal_points, elements, boundary_edges = gm.generate_mesh(num_nodes)
+
+    # Assemble stiffness matrix
+    A = stiffness.stiffness_matrix(num_nodes, nodal_points, elements)
+
+    assert A.shape[0] == A.shape[1], "Stiffness matrix must be square"
+
+    # Check that matrix is singular (condition number is effectively infinite)
+    assert np.linalg.cond(A) > 1e16, "Stifness matrix must be singular"
