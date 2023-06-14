@@ -263,3 +263,18 @@ def test_elemental_load_vector():
     expected_output = np.array([1/12, 1/8, 1/8])
     
     assert np.allclose(F_k, expected_output), "Wrong elemental load vector in simple case"
+
+#----------------------------------------------------------------------------------------
+
+@given(num_nodes = st.integers(4, 100))
+def test_load_vector(num_nodes):
+    '''
+        Function that tests that the load vector has the correct size
+    '''
+    def f_test(x, y):
+        return x+y
+    nodal_points, elements, boundary_edges = gm.generate_mesh(num_nodes)
+
+    load_vector = load.load_vector(num_nodes, nodal_points, elements, f_test)
+
+    assert len(load_vector) == num_nodes, "Load vector must be as long as the total number of nodes."

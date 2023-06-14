@@ -62,3 +62,38 @@ def elemental_load_vector(nodal_points, element, right_hand_side = zero_func):
 
 #----------------------------------------------------------------------------------------
 
+def load_vector(num_nodes, nodal_points, elements, right_hand_side = zero_func):
+    '''
+        This function assembles the whole load vector F. 
+        ----------------
+        Inputs:
+            num_nodes (int): Total number of nodes in the finite element mesh
+            nodal_points: List/numpy array of all nodal points in the mesh
+            elements: List/numpy array where every element is a vector with 3 elements
+                      which gives the index in the nodal_points array of which nodes
+                      makes up element i
+            right_hand_side: the function on the right hand side of the original poisson equation
+        ----------------
+        Output:
+           load_vector: A num_nodes long vector that is the load
+                              vector for the whole system
+        ----------------
+        Raises:
+            -
+        ----------------
+        Long description:
+            This function uses the mesh of the unit circle and the helping function 
+            elemental_load_vector() to assemble the full load vector of
+            the system.
+    '''
+    # Initialize load vector as a vector of zeros
+    F = np.zeros(num_nodes)
+    num_elemenents = len(elements)
+
+    for k in range(num_elemenents):
+        Fh_k = elemental_load_vector(nodal_points, elements[k], right_hand_side)
+        for alpha in range(3):
+            # Local to global map
+            i = elements[k, alpha]
+            F[i] += Fh_k[alpha]
+    return F
