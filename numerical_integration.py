@@ -30,7 +30,7 @@ def gaussian_quadrature_2D(p1, p2, p3, N_q : int, g):
         ----------------
         Long description: 
             Numerically solves the 2D-integral of the function g given by
-            \iint_\Omega g(z)dz \approx \sum_{q=1}^Nq \rho_q * g(z_q)
+            iint_Omega g(z)dz approx sum_{q=1}^Nq rho_q * g(z_q)
             where \Omega is a reference domain (in this case triangles)
             and \rho and z are 
     '''
