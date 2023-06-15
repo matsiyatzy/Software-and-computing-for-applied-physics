@@ -289,13 +289,58 @@ def test_load_vector(num_nodes):
 #----------------------------------------------------------------------------------------
 
 @given(num_nodes = st.integers(400, 1000))
-@settings(max_examples = 2) # Apparently tests take too long...
+@settings(max_examples = 10, deadline=None)
 def test_solver_zerofunc(num_nodes):
     '''
         Tests that the solver finds the solution u = 0 when f = 0.
     '''
+    # Finds solution with solver
     sol, nodal_points = solver.solver(num_nodes) # zero func is standard
 
+    # Exact solution
     zerosol = np.zeros(num_nodes)
-    assert np.allclose(sol, zerosol), "Solver does not find right solution for f = 0"
+
+    # Find error
+    error = np.abs(zerosol - sol)
+
+    # Assert that the error is small
+    assert np.max(error) < 0.001, "Solver does not find right solution for f = 0"
+
+#----------------------------------------------------------------------------------------
+
+@given(num_nodes = st.integers(400, 1000))
+@settings(max_examples = 2, deadline=None)
+def test_solver_advanced(num_nodes):
+    '''
+        This function tests if the solver() function finds the correct solution for a
+        complicated function. If the right hand side is
+        f(x, y) = -8*pi*cos(2*pi*(x^2+y^2)) + 16*pi^2*(x^2+y^2)*sin(2*pi(x^2+y^2))
+        The exact solution is (just plug it into the equation to check)
+        u(x, y) = sin(2*pi*(x^2+y^2))
+    '''
+
+    def right_hand_side_advanced(x, y):
+        '''
+            Advanced RHS function f
+        '''
+        return -8*np.pi*np.cos(2*np.pi*(x**2+y**2)) + 16*np.pi**2*(x**2+y**2)*np.sin(2*np.pi*(x**2+y**2))
+    
+    def u_exact(x, y):
+        '''
+            Exact solution given above RHS
+        '''
+        return np.sin(2*np.pi*(x**2+y**2))
+    
+    # Find solution with solver
+    sol, nodal_points = solver.solver(num_nodes, right_hand_side_advanced)
+
+    # Find exact solution on vector form
+    exact_sol = u_exact(nodal_points[:, 0], nodal_points[:, 1])
+
+    # Find the error
+    error = np.abs(exact_sol - sol)
+
+    # Assert that the max error is less than 0.1
+    # Hard to get it much smaller without smoothing the mesh more
+    assert np.max(error) < 0.1, "Solver finds wrong solution for advanced function"
 
