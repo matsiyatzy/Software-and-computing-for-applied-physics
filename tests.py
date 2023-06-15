@@ -7,6 +7,7 @@ import numerical_integration as numint
 import generate_mesh as gm
 import assemble_stiffness_matrix as stiffness
 import assemble_load_vector as load
+import solver
 
 
 # Tests from numerical_integration.py
@@ -163,7 +164,8 @@ def test_get_boundary_edges_on_boundary(num_nodes):
 
 #----------------------------------------------------------------------------------------
 
-@given (num_nodes = st.integers(4, 1000))
+@given (num_nodes = st.integers(4, 10000))
+@settings(max_examples = 20)
 def test_generate_mesh_elements(num_nodes):
     '''
         This is a test function for the function generate_mesh().
@@ -213,7 +215,8 @@ def test_elemental_stiffness_matrix():
 
 #----------------------------------------------------------------------------------------
 
-@given(num_nodes = st.integers(4, 100)) # Only up to 100 due to time condition in pytest
+@given(num_nodes = st.integers(4, 1000)) # Only up to 100 due to time condition in pytest
+@settings(max_examples = 10)
 def test_stiffness_matrix(num_nodes):
     '''
         This is a test function for the function stiffness_matrix().
@@ -273,8 +276,26 @@ def test_load_vector(num_nodes):
     '''
     def f_test(x, y):
         return x+y
+    
     nodal_points, elements, boundary_edges = gm.generate_mesh(num_nodes)
 
     load_vector = load.load_vector(num_nodes, nodal_points, elements, f_test)
 
     assert len(load_vector) == num_nodes, "Load vector must be as long as the total number of nodes."
+
+#----------------------------------------------------------------------------------------
+
+# Tests for solver
+#----------------------------------------------------------------------------------------
+
+@given(num_nodes = st.integers(400, 1000))
+@settings(max_examples = 2) # Apparently tests take too long...
+def test_solver_zerofunc(num_nodes):
+    '''
+        Tests that the solver finds the solution u = 0 when f = 0.
+    '''
+    sol, nodal_points = solver.solver(num_nodes) # zero func is standard
+
+    zerosol = np.zeros(num_nodes)
+    assert np.allclose(sol, zerosol), "Solver does not find right solution for f = 0"
+
