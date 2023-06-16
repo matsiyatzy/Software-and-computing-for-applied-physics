@@ -77,6 +77,10 @@ def plot_solution(nodal_points, numerical_sol, plot_exact = False, exact_sol = n
     num_nodes = len(nodal_points)
 
     if (plot_exact):
+        if len(exact_sol != len(numerical_sol)):
+            raise ValueError ("Exact solution and numerical solution are of different size")
+
+    if (plot_exact):
 
         fig = plt.figure(figsize=(18, 6))
         fig.suptitle(f"num_nodes = {num_nodes}", size = 22)
