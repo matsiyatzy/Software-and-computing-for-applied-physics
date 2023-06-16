@@ -216,7 +216,7 @@ def test_elemental_stiffness_matrix():
 #----------------------------------------------------------------------------------------
 
 @given(num_nodes = st.integers(4, 1000)) # Only up to 100 due to time condition in pytest
-@settings(max_examples = 10)
+@settings(max_examples = 20, deadline=None)
 def test_stiffness_matrix(num_nodes):
     '''
         This is a test function for the function stiffness_matrix().
