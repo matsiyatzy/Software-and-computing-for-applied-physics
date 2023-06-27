@@ -62,3 +62,5 @@ def run_program(num_nodes = 1000, plot_exact = False, exact_sol = np.zeros(10)):
         plotting.plot_solution(nodal_points, sol, True, exact_sol)
     else:
         plotting.plot_solution(nodal_points, sol)
+
+run_program() # Maybe edit input here!
