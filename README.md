@@ -1,4 +1,12 @@
-# 2D Poisson equation
+## Table of content 
+
+- [Background theory of 2D Poisson equation](#2D-Poisson-equation)
+- [Structure of repository](#Structure-of-repository)
+- [How to use](#How-to-use)
+- [Possible extensions](#Possible-extensions)
+
+<!----><a name="2D-Poisson-equation"></a>
+## 2D Poisson equation
 This repository holds an implementation of a solver that solves the 2D-Poisson problem on the unit disc with homogeneous dirichlet boundary conditions. In this readme, there is a quick summary of the theory behind the problem. For a more detailed explanation, check out the file *2dPoissonProblem.pdf*. The problem is given by
 
 $$\begin{cases}\nabla^2 u(x, y) = -f(x, y), (x, y)\in\Omega \\\ u(x, y) = 0, (x, y) \in \partial \Omega\end{cases}$$
@@ -60,5 +68,32 @@ $$\begin{align*}
 \end{align*}$$
 
 
-
+<!----><a name="Structure-of-repository"></a>
 ## Structure of the repository
+- The file 2dPoissonProblem.pdf holds a more detailed explanation of the theory behind the code in this repository than the summary given in the paragraph above.
+- assemble_load_vector.py holds the implementation of the assembly of the load vector $\mathbf{f}$.
+- assemble_stiffness_matrix.py holds the implementation of the assembly of the stiffness matrix $A$.
+- generate_mesh.py holds the code that implements the finite element mesh of the unit circle.
+- main.py holds the code that runs the whole program, see below for more in-depth use.
+- numerical_integration.py holds the code for the numerical integration used in assemble_load_vector.
+- plotting.py holds code to plot solutions of the problem and the mesh of the unit circle.
+- requirements.txt holds all the requirements to run the code in this repository. Created via pipreqs.
+- solver.py holds the code that combines many of the files to solve the problem.
+- tests.py holds all the test functions for all the different functions in the repository.
+
+
+<!----><a name="How-to-use"></a>
+## How to use
+To use this code, follow these steps:
+
+1. Ensure that your software meets the requirements in requirements.txt.
+2. Clone the repository.
+3. Navigate to the file "main.py".
+4. Edit the function "right_hand_side_f(x, y)" to be the right hand side you want to solve for.
+5. If you have the exact solution, implement a function for that as well.
+6. Run the code by running the function run_program(). You might want to edit the default inputs.
+
+
+<!----><a name="Possible-extensions"></a>
+## Possible extensions
+Some obvious possible extensions to this repository is to allow neumann and mixed boundary conditions. Even further extensions is to implement the possibility to solve other partial differential equations than just the 2D poisson equation.
