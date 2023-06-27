@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 
 import assemble_load_vector as loadvec
 import assemble_stiffness_matrix as stiffmat

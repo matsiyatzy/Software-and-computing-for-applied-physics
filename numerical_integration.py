@@ -1,6 +1,4 @@
 import numpy as np
-from tabulate import tabulate
-
 
 def gaussian_quadrature_2D(p1, p2, p3, N_q : int, g):
     '''
