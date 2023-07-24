@@ -16,7 +16,9 @@ def solver(num_nodes, right_hand_side = loadvec.zero_func):
         ----------------
         Output:
             sol: A vector of length num_nodes that is the solution to the poisson problem 
-            nodal_points: the nodal_points we get from the mesh generation
+            nodal_points (ndarray): the nodal_points we get from the mesh generation
+            elements (ndarray): the elements we get from mesh generation
+            boundary_edges (ndarray): list of boundary nodes we get from mesh generation
         ----------------
         Raises:
             -
@@ -51,4 +53,4 @@ def solver(num_nodes, right_hand_side = loadvec.zero_func):
     sol[:len(solution_temp)] = solution_temp
 
     # Return the solution, and nodal_points + elements for plotting
-    return sol, nodal_points
+    return sol, nodal_points, elements, boundary_edges

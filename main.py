@@ -59,8 +59,8 @@ def run_program(num_nodes = 1000, plot_exact = False, exact_sol = np.zeros(10)):
             gives the total number of nodes in the FEM mesh. 
 
     '''
-    # Generate mesh based on num_nodes argument
-    nodal_points, elements, boundary_edges = mesh.generate_mesh(num_nodes)
+    # Find numerical solution and mesh
+    sol, nodal_points, elements, boundary_edges = solver.solver(num_nodes, right_hand_side_f)
 
     # Comment out the below line if you only have exact solution on function form
     # exact_sol = exact_func(nodal_points[:, 0], nodal_points[:, 1])
@@ -69,8 +69,6 @@ def run_program(num_nodes = 1000, plot_exact = False, exact_sol = np.zeros(10)):
     print(f"The finite element mesh given by the provided {num_nodes} nodes: ")
     plotting.plot_unit_circle_mesh(nodal_points, elements, boundary_edges)
 
-    # Find numerical solution
-    sol, _ = solver.solver(num_nodes, right_hand_side_f)
 
     # Plot solution
     if (plot_exact):
