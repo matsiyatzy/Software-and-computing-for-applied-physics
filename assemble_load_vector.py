@@ -5,7 +5,26 @@ import numerical_integration as numint
 
 
 def zero_func(x, y):
-    return 0
+    '''
+        This is the zero function.
+        ----------------
+        Inputs: 
+            - x (ndarray): array of x-coordinates/inputs
+            - y (ndarray): array of y-coordinates/inputs
+        ----------------
+        Outputs:
+            - ndarray of len(x) zeros
+       ----------------
+        Raises:
+            - ValueError: if x and y have different size
+        ----------------
+        Long description: 
+            A simple implementation that returns the zero function from two inputs x and y.
+            This is used as the default parameter for the right hand side of the PDE.
+    '''
+    if (len(x) != len(y)):
+        raise ValueError ("x and y must have the same size")
+    return np.zeros(len(x))
 
 def elemental_load_vector(nodal_points, element, right_hand_side = zero_func):
     '''¨

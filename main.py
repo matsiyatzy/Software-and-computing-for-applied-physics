@@ -8,11 +8,25 @@ import plotting
 def right_hand_side_f(x, y):
     '''
         This function gives the right hand side of the Poisson problem.
-        Edit this function to find a numerical solution to
-        nabla^2 u(x, y) = -f(x, y),
-        where f(x, y) is given by this function.
+        ----------------
+        Inputs:
+            - x (ndarray): array of x-coordinates/inputs
+            - y (ndarray): array of y-coordinates/inputs
+        ----------------
+        Output:
+            - ndarray of the value of f (the right hand side) at each pair (x, y)
+        ----------------
+        Raises:
+            - ValueError: if x and y have different sizes
+        ----------------
+        Long description:
+            This function gives the right hand side of the Poisson problem,
+            nabla^2 u(x, y) = -f(x, y),
+            where f(x, y) is given by this function.
     '''
-    return 1 - x**2 - y**2 # Edit here!
+    if (len(x) != len(y)):
+        raise ValueError ("x and y must have the same size")
+    return 1 - x**2 - y**2
 
 #----------------------------------------------------------------------------------------
 
@@ -58,9 +72,9 @@ def run_program(num_nodes = 1000, plot_exact = False, exact_sol = np.zeros(10)):
     # Find numerical solution
     sol, _ = solver.solver(num_nodes, right_hand_side_f)
 
+    # Plot solution
     if (plot_exact):
         plotting.plot_solution(nodal_points, sol, True, exact_sol)
     else:
         plotting.plot_solution(nodal_points, sol)
 
-run_program() # Maybe edit input here!
