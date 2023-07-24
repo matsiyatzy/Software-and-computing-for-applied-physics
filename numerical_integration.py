@@ -55,20 +55,16 @@ def gaussian_quadrature_2D(p1, p2, p3, N_q : int, g):
     
     elif(N_q == 4):
         z = np.array([np.array([1/3, 1/3, 1/3]), np.array([3/5, 1/5, 1/5]),
-                    np.array([1/5, 3/5, 1/5]), np.array([1/5, 1/5, 3/5])])
+                      np.array([1/5, 3/5, 1/5]), np.array([1/5, 1/5, 3/5])])
         rho = np.array([-9/16, 25/48, 25/48, 25/48])
     
     # Calculate the area of a triangle given by (p1, p2, p3)
-    area = 1/2 * np.abs(p1[0]*(p2[1] - p3[1]) + p2[0]*(p3[1]-p1[1]) + p3[0]*(p1[1]-p2[1]))
+    area = 0.5 * np.abs(p1[0]*(p2[1] - p3[1]) + p2[0]*(p3[1]-p1[1]) + p3[0]*(p1[1]-p2[1]))
 
     # Performing the numerical integration
-    x = np.zeros(N_q)
-    y = np.zeros(N_q)
-    
-    for i in range(N_q):
-        x[i] = z[i][0]*p1[0] + z[i][1]*p2[0] + z[i][2]*p3[0]
-        y[i] = z[i][0]*p1[1] + z[i][1]*p2[1] + z[i][2]*p3[1]
-    
+    x = z @ np.array([p1[0], p2[0], p3[0]])
+    y = z @ np.array([p1[1], p2[1], p3[1]])
+ 
     I = np.sum(rho * g(x, y))
 
     value_of_integral = I*area
