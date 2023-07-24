@@ -295,7 +295,7 @@ def test_solver_zerofunc(num_nodes):
         Tests that the solver finds the solution u = 0 when f = 0.
     '''
     # Finds solution with solver
-    sol, nodal_points = solver.solver(num_nodes) # zero func is standard
+    sol, _, _, _ = solver.solver(num_nodes) # zero func is standard
 
     # Exact solution
     zerosol = np.zeros(num_nodes)
@@ -332,7 +332,7 @@ def test_solver_advanced(num_nodes):
         return np.sin(2*np.pi*(x**2+y**2))
     
     # Find solution with solver
-    sol, nodal_points = solver.solver(num_nodes, right_hand_side_advanced)
+    sol, nodal_points, elements, boundary_edges = solver.solver(num_nodes, right_hand_side_advanced)
 
     # Find exact solution on vector form
     exact_sol = u_exact(nodal_points[:, 0], nodal_points[:, 1])
