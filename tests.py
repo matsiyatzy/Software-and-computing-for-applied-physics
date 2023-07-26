@@ -10,6 +10,7 @@ import assemble_load_vector as load
 import solver
 
 
+#----------------------------------------------------------------------------------------
 # Tests from numerical_integration.py
 #----------------------------------------------------------------------------------------
 
@@ -31,7 +32,7 @@ def test_gaussian_quadrature_2d_simple():
     exact = 1/3
 
     numerical_value = numint.gaussian_quadrature_2D(p1, p2, p3, 4, g)
-    assert np.abs(numerical_value-exact) < 0.01
+    assert np.allclose(numerical_value, exact, 0.01)
 
 #----------------------------------------------------------------------------------------
 
@@ -54,7 +55,7 @@ def test_gaussian_quadrature_2d_advanced():
 
     numerical_value = numint.gaussian_quadrature_2D(p1, p2, p3, 4, g)
 
-    assert np.abs(numerical_value - exact) < 0.01
+    assert np.allclose(numerical_value, exact, 0.01)
 
 #----------------------------------------------------------------------------------------
 
