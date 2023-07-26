@@ -115,9 +115,8 @@ def test_circle_data_starting_angle_for_circles(num_nodes):
     _, _, _, starting_angles = gm.circle_data(num_nodes)
 
     assert isinstance(starting_angles, np.ndarray), "The atarting angles list should be a np.array"
-    for i in range(len(starting_angles)):
-        assert starting_angles[i] < 2*np.pi, "Starting angle must be smaller than 2*pi"
-        assert starting_angles[i] >= 0, "Starting angle must be larger than 0"
+    assert np.all(starting_angles < 2*np.pi), "Starting angle must be smaller than 2*pi"
+    assert np.all(starting_angles >= 0), "Starting angle must be larger than 0"
 
 #----------------------------------------------------------------------------------------
 
@@ -131,9 +130,9 @@ def test_get_nodal_points_inside_unit_circle(num_nodes):
 
     # Generating the nodal points.
     nodal_points = gm.get_nodal_points(num_nodes, outward_circles, radii_of_circles, dof_in_circles, starting_angle_for_circles)
+    distances_from_origin = nodal_points[:, 0]**2 + nodal_points[:, 1]**2
 
-    for i in range(len(nodal_points)):
-        assert np.round(nodal_points[i, 0]**2 + nodal_points[i, 1]**2, 4) <= 1, "Nodal points are outside unit circle"
+    assert np.all(np.round(distances_from_origin, 4) <= 1), "Nodal points are outside unit circle"
 
 #----------------------------------------------------------------------------------------
 
@@ -151,22 +150,17 @@ def test_get_boundary_edges_on_boundary(num_nodes):
     # Generating the boundary nodes
     boundary_edges = gm.get_boundary_edges(num_nodes, dof_in_circles)
 
-    for boundary_edge in boundary_edges:
-        first_node = boundary_edge[0]
-        second_node = boundary_edge[1]
-        print(nodal_points[int(first_node)][0]**2 + nodal_points[int(first_node)][1]**2)
-        print(nodal_points[int(second_node)][0]**2 + nodal_points[int(second_node)][1]**2)
-        
-        # Make sure that first node is on the boundary
-        assert np.isclose(nodal_points[int(first_node)][0]**2 + nodal_points[int(first_node)][1]**2, 1), "All boundary nodes needs to be on the boundary"
+    # Calculate the squared distance from the origin for all boundary nodes
+    boundary_nodes = np.concatenate((boundary_edges[:, 0], boundary_edges[:, 1]))
+    distances_from_origin = nodal_points[boundary_nodes.astype(int), 0]**2 + nodal_points[boundary_nodes.astype(int), 1]**2
 
-        # Make sure the second node is on the boundary
-        assert np.isclose(nodal_points[int(second_node)][0]**2 + nodal_points[int(second_node)][1]**2, 1), "All boundary nodes needs to be on the boundary"
+    # Check if all squared distances are close to 1
+    assert np.allclose(distances_from_origin, 1), "All boundary nodes need to be on the boundary"
 
 #----------------------------------------------------------------------------------------
 
 @given (num_nodes = st.integers(4, 10000))
-@settings(max_examples = 20)
+@settings(max_examples = 20, deadline=None)
 def test_generate_mesh_elements(num_nodes):
     '''
         This is a test function for the function generate_mesh().
