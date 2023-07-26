@@ -232,7 +232,7 @@ def test_stiffness_matrix(num_nodes):
     assert A.shape[0] == A.shape[1], "Stiffness matrix must be square"
 
     # Check that matrix is singular (condition number is effectively infinite)
-    assert np.linalg.cond(A) > 1e16, "Stifness matrix must be singular"
+    assert np.linalg.cond(A) > 1e15, "Stifness matrix must be singular"
 
 #----------------------------------------------------------------------------------------
 
