@@ -45,10 +45,9 @@ def elemental_stiffness_matrix(nodal_points, element):
     area = 1/2 * np.abs(p1[0]*(p2[1] - p3[1]) + p2[0]*(p3[1]-p1[1]) + p3[0]*(p1[1]-p2[1]))
 
     # Assemble local elemental matrix - follows the theory pdf
-    for alpha in range(3):
-        for beta in range(3):
-            # A^k_{alpha, beta} = area(triangle) * (c_x,alpha * c_x,beta + c_y, alpha * c_y, beta)
-            A_k[alpha,beta] = area * (C[alpha,1] * C[beta,1] + C[alpha,2] * C[beta,2])
+    
+    # A^k_{alpha, beta} = area(triangle) * (c_x,alpha * c_x,beta + c_y, alpha * c_y, beta)
+    A_k = area * (C[:, 1:3] @ C[:, 1:3].T)
     return A_k
 
 #----------------------------------------------------------------------------------------
@@ -78,14 +77,10 @@ def stiffness_matrix(num_nodes, nodal_points, elements):
     '''
     # Initialize stiffness matrix as a matrix of zeros
     A = np.zeros((num_nodes,num_nodes))
-    num_elemenents = len(elements)
+    num_elements = len(elements)
 
-    for k in range(num_elemenents):
+    for k in range(num_elements):
         Ah_k = elemental_stiffness_matrix(nodal_points, elements[k])
-        for alpha in range(3):
-            # Local to global map
-            i = elements[k,alpha]
-            for beta in range(3):
-                j = elements[k,beta]
-                A[i,j] += Ah_k[alpha, beta]
+        indices = elements[k, :]
+        A[np.ix_(indices, indices)] += Ah_k
     return A
