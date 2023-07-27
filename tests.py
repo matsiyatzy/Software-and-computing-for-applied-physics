@@ -75,6 +75,19 @@ def test_circle_data_outwards_circle(num_nodes):
 
 #----------------------------------------------------------------------------------------
 
+def test_circle_data_outwards_circles_simple_case():
+    '''
+        Test that the number of outwards circles gives the correct answer in a simple case.
+        It is calculated as the floor of the square root of num_nodes/pi.
+        By setting num_nodes = 315, the square root of 315/pi is a bit larger than 10,
+        thus, the number of outwards circles should be 10.
+    '''
+    outwards_circles, _, _, _ = gm.circle_data(315)
+
+    assert outwards_circles == 10, "Number of outwards circles is wrong in a simple case"
+
+#----------------------------------------------------------------------------------------
+
 @given(num_nodes = st.integers(4, 1000))
 def test_circle_data_radii_of_circles(num_nodes):
     '''
@@ -91,6 +104,26 @@ def test_circle_data_radii_of_circles(num_nodes):
 
 #----------------------------------------------------------------------------------------
 
+def test_circle_data_radii_of_circles_simple_case():
+    '''
+        Test that the radii of the different circles in the mesh is correct
+        in a simple case. I use the same simple case as in 
+        test_circle_data_outwards_circles_simple_case() with 
+        10 circles. So the circles should have radii
+        0, 0.1, 0.2, ..., 1.
+    '''
+    _, radii_of_circles, _, _ = gm.circle_data(315)
+
+    increments = np.diff(radii_of_circles)
+
+    assert len(increments) == 10, "There should be 10 circles in this simple case"
+    assert np.allclose(increments, 0.1), "The radii should increase with 0.1 for each circle in simple case"
+    assert radii_of_circles[0] == 0, "Radius of the origin must be 0"
+    assert radii_of_circles[-1] == 1, "Radius of the last circle must be 1"
+
+#----------------------------------------------------------------------------------------
+
+
 @given(num_nodes = st.integers(4, 1000))
 def test_circle_data_dof_in_circles(num_nodes):
     '''
@@ -103,6 +136,39 @@ def test_circle_data_dof_in_circles(num_nodes):
     assert isinstance(dof_in_circles, np.ndarray), "The dof in each circle should be a np.array"
     assert np.sum(dof_in_circles) == num_nodes, "The total degrees of freedom should equal num of nodes"
     
+#----------------------------------------------------------------------------------------
+
+def test_circle_data_dof_in_circles_origin():
+    '''
+        Test that the dof_in_circles are correct in a simple case.
+        This test checks that it is only 1 DOF in the origin.
+    '''
+    _, _, dof_in_circles10, _ = gm.circle_data(10)
+    _, _, dof_in_circles42, _ = gm.circle_data(42)
+
+    print(dof_in_circles10)
+    print(dof_in_circles42)
+
+    assert dof_in_circles10[0] == 1, "There should only be 1 DOF in the origin when num_nodes = 10"
+    assert dof_in_circles42[0] == 1, "There should only be 1 DOF in the origin when num_nodes = 42"
+
+#----------------------------------------------------------------------------------------
+
+def test_circle_data_dof_in_circles_increasing():
+    '''
+        Test that the dof_in_circles is correct. To make a best 
+        possible mesh, the number of DOF in each circle outward
+        from the origin should be increasing.
+    '''
+    _, _, dof_in_circles42, _ = gm.circle_data(42)
+    _, _, dof_in_circles1000, _ = gm.circle_data(1000)
+
+    differences42 = np.diff(dof_in_circles42)
+    differences1000 = np.diff(dof_in_circles1000)
+
+    assert np.all(differences42 > 0), "DOF in circles should be increasing"
+    assert np.all(differences1000 > 0), "DOF in circles should be increasing"
+
 #----------------------------------------------------------------------------------------
 
 @given(num_nodes = st.integers(4, 1000))
