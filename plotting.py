@@ -48,7 +48,7 @@ def plot_unit_circle_mesh(nodal_points, elements, boundary_edges):
 
 #----------------------------------------------------------------------------------------
 
-def plot_solution(nodal_points, numerical_sol, plot_exact = False, exact_sol = np.zeros(10)):
+def plot_solution(nodal_points, numerical_sol):
     '''
         Function that plots the solution of the 2D poisson problem
         ----------------
@@ -56,18 +56,12 @@ def plot_solution(nodal_points, numerical_sol, plot_exact = False, exact_sol = n
             nodal_points (ndarray): List of all nodal points in the mesh
             numerical_sol (ndarray): The numerical solution received from the 
                                      solver() function. Given as an len(nodal_points) array
-            plot_exact (bool): Flag to indicate whether or not this function should also
-                               plot the exact solution to the given problem. If this is true, 
-                               an exact solution must also be provided. 
-            exact_sol (ndarray): The exact solution to the given problem, on the same format
-                                 as numerical_sol. This must be provided if plot_exact = True.
         ----------------
         Outputs:
-            None, but plots a solution to the 2D poisson problem, and if provided, also the
-            exact solution.
+            None, but plots a solution to the 2D poisson problem.
        ----------------
         Raises:
-            ValueError: if plot_exact = True, but exact_sol is not provided
+            
         ----------------
         Long description: 
             This function takes the numerical solution of the 2D poisson problem provided
@@ -76,32 +70,8 @@ def plot_solution(nodal_points, numerical_sol, plot_exact = False, exact_sol = n
     '''
     num_nodes = len(nodal_points)
 
-    if (plot_exact):
-        if len(exact_sol != len(numerical_sol)):
-            raise ValueError ("Exact solution and numerical solution are of different size")
-
-    if (plot_exact):
-
-        fig = plt.figure(figsize=(18, 6))
-        fig.suptitle(f"num_nodes = {num_nodes}", size = 22)
-        
-        ax1 = fig.add_subplot(1, 3, 1, projection="3d")
-        ax1.plot_trisurf(nodal_points[:, 0], nodal_points[:, 1], numerical_sol, linewidth=0.2)
-        ax1.set_title("Numerical solution")
-        
-        ax2 = fig.add_subplot(1, 3, 2, projection="3d")
-        ax2.plot_trisurf(nodal_points[:, 0], nodal_points[:, 1], exact_sol, linewidth=0.2)
-        ax2.set_title("Exact")
-        
-        ax3 = fig.add_subplot(1, 3, 3, projection="3d")
-        ax3.plot_trisurf(nodal_points[:, 0], nodal_points[:, 1], np.abs(numerical_sol - exact_sol), linewidth=0.2)
-        ax3.set_title("|Error|")
-
-        plt.show()
-
-    else:
-        fig = plt.figure()
-        ax = fig.add_subplot(projection='3d')
-        ax.plot_trisurf(nodal_points[:, 0], nodal_points[:, 1], numerical_sol, linewidth=0.2)
-        ax.set_title(f"Numerical solution with num_nodes = {num_nodes}")
-        plt.show()
+    fig = plt.figure()
+    ax = fig.add_subplot(projection='3d')
+    ax.plot_trisurf(nodal_points[:, 0], nodal_points[:, 1], numerical_sol, linewidth=0.2)
+    ax.set_title(f"Numerical solution with num_nodes = {num_nodes}")
+    plt.show()
